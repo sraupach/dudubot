@@ -10,14 +10,7 @@
     container.config = require('./settings/config.json');
     container.config.plugins = require('./settings/plugins.json');
 
-    /* create bot
-    var Discord = require('discord.io');
-    const client = new Discord.Client({
-            autorun: true,
-            token: container.config.api.discord_bot_token
-    });  */
-
-
+    // create bot
     const client = new (require('discord.io')).Client({
         token: container.config.api.discord_bot_token,
         autorun: true
@@ -36,17 +29,7 @@
     const commands = container.commands;
     const config = container.config;
 
-    // Load link-list Stuff
-    var LinkedList = require('singly-linked-list');
-    var list = new LinkedList();
-
-    var dcmd = "dev"
-
-    list.clear();
-
     client.on('ready', function () {
-        //console.log("bot connected ", client.username, client.id); 
-
         client.connected = true;
         let lines = '';
         lines += `${client.username} [${chalk.yellow(client.id)}] is now online.`;
@@ -73,19 +56,6 @@
         }
 
     });
-
-    var setStatus = function (game) {
-        client.setPresence({
-            game: {
-                "name": game
-            }
-        });
-    }
-
-    var getNick = function (uID) {
-        var usernick = client.users[uID].username;
-        return usernick;
-    }
 
     client.on('message', function (user, userID, channelID, message, event) {
         const meta = {
@@ -179,30 +149,8 @@
             let cmd = util.stripCommandPrefixes(message);
             util.log('privmsg received' + cmd);
         }
-
-
-        //var MsgServerID = client.channels[channelID].guild_id
-
-        swcase = message.split(" ");
-        if (userID === "203435970182250498") {
-            var substr = dcmd + " game:"
-            if (message.indexOf(substr) > -1) {
-                var arr = message.split(":");
-                setStatus(arr[1]);
-                send(channelID, "Presence set to: " + arr[1] + ", master!");
-            }
-        }
-
-    });
-
-    var send = function (channelID, message) {
-        client.sendMessage({
-            to: channelID,
-            message: message,
-            tts: false
-        });
-
-    }
+            });
+        
 
 
     client.on('disconnect', function () {

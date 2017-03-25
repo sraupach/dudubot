@@ -1,0 +1,4 @@
+#Setting
+settings/config.json
+#VS.code Configs
+.vscode/ftp-sync.json

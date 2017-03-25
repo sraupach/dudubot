@@ -6,17 +6,11 @@ module.exports = function command(bot, container) {
         description: 'set the current activity of the bot',
         permissions: 'private',
         action: function (meta) {
-            client.setPresence({
+            bot.setPresence({
                 game: {
                     "name": meta.input
                 }
-            }, function (meta) {
-                bot.sendMessage({
-                    to: meta.channelID,
-                    message: '\`set playing to: **' + meta.input +'**\`'
-                });
             });
-
         }
     };
 };

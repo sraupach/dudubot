@@ -14,7 +14,8 @@ module.exports = function plugin(bot, container, pconfig) {
     // reference---------------------------------
     const config = container.config;
     const util = container.util
-    // dependencies
+    const db = container.db;
+    // dependencies 
     var LinkedList = require('singly-linked-list');
     var list = new LinkedList();
 
@@ -60,7 +61,7 @@ module.exports = function plugin(bot, container, pconfig) {
                         } else {
                             //console.log("User exisitert nicht in der Liste")
                         };
-                        
+
                     };
                 };
             };
@@ -68,6 +69,40 @@ module.exports = function plugin(bot, container, pconfig) {
 
         };
     });
+
+    // Check if DB-Entity exists and update entry with currently active User in #Voice-Channel
+    client.on('dbready', function () {
+        for (var ServerID in pconfig.Server) {
+            db.client.findOne({ type: 'vc-users', serverID: ServerID }, function (err, vcUsers) {
+                if (vcUsers) {
+                    // DB-Entry exists: db.update list (voice channel --> DB)
+                    db.client.update({
+                        type: 'vc-users',
+                    }, {
+                            $set: {
+                                user: bot.servers[pconfig.Server[ServerID]].Channel[pconfig.Server[ServerID].vcID].members,
+                                last_update: Date.now()
+                            }
+                        });
+                } else {
+                    // create the vs-users entry and save it
+                    vcUsers = {
+                        type: 'vc-users',
+                        serverID: ServerID,
+                        chanID: pconfig.Server[ServerID].vcID,
+                        user: bot.servers[pconfig.Server[ServerID]].Channel[pconfig.Server[ServerID].vcID].members,
+                        last_update: Date.now()
+                    };
+                    // insert the stats
+                    db.client.insert(vcUsers, function (err, vcUsers) {
+                        util.vlog('DB-Insert von vc-users wurde durchgeführt')
+                        //
+                    });
+                }
+            });
+        }
+    });
+
 
     // methods-----------------------------------
 
@@ -97,33 +132,33 @@ module.exports = function plugin(bot, container, pconfig) {
             const server = !dm ? bot.channels[channelID].guild_id : null;
             if (server === pconfig.home.server && userID !== bot.id) {
                 /* jshint -W100 */ /*
-    if (message.indexOf('(╯°□°）╯︵ ┻━┻') > -1) {
-        bot.sendMessage({
-            to: channelID,
-            message: '┬─┬﻿ ノ( ゜-゜ノ)'
-        });
-    } else if (message.indexOf('┬─┬﻿ ノ( ゜-゜ノ)') > -1) {
-        bot.sendMessage({
-            to: channelID,
-            message: `(╯°□°）╯︵ ┻━┻`
-        });
-    }
+if (message.indexOf('(╯°□°）╯︵ ┻━┻') > -1) {
+bot.sendMessage({
+to: channelID,
+message: '┬─┬﻿ ノ( ゜-゜ノ)'
+});
+} else if (message.indexOf('┬─┬﻿ ノ( ゜-゜ノ)') > -1) {
+bot.sendMessage({
+to: channelID,
+message: `(╯°□°）╯︵ ┻━┻`
+});
+}
 }
 });
 
-    var voicelist = []
-    var vcName = client.servers[ServerID].channels[VCID].name
-    var voicecount = list.getSize()
-    if (voicecount > 0) {
-        for(var i = 0; i < voicecount ; i++) {
-                vUID = list.findAt(i);
-                user = getNick(vUID);
-                voicelist.push(user+"("+vUID+")");
-        }
-    } else {
-            voicelist = "user found in "+vcName
-    }
-    send(channelID, voicecount+" "+voicelist);
+var voicelist = []
+var vcName = client.servers[ServerID].channels[VCID].name
+var voicecount = list.getSize()
+if (voicecount > 0) {
+for(var i = 0; i < voicecount ; i++) {
+vUID = list.findAt(i);
+user = getNick(vUID);
+voicelist.push(user+"("+vUID+")");
+}
+} else {
+voicelist = "user found in "+vcName
+}
+send(channelID, voicecount+" "+voicelist);
 */
 
     //return true;

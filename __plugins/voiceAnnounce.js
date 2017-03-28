@@ -71,36 +71,43 @@ module.exports = function plugin(bot, container, pconfig) {
     });
 
     // Check if DB-Entity exists and update entry with currently active User in #Voice-Channel
-    client.on('dbready', function () {
-        for (var ServerID in pconfig.Server) {
-            db.client.findOne({ type: 'vc-users', serverID: ServerID }, function (err, vcUsers) {
-                if (vcUsers) {
-                    // DB-Entry exists: db.update list (voice channel --> DB)
-                    db.client.update({
-                        type: 'vc-users',
-                    }, {
-                            $set: {
-                                user: bot.servers[pconfig.Server[ServerID]].Channel[pconfig.Server[ServerID].vcID].members,
-                                last_update: Date.now()
-                            }
-                        });
-                } else {
-                    // create the vs-users entry and save it
-                    vcUsers = {
-                        type: 'vc-users',
-                        serverID: ServerID,
-                        chanID: pconfig.Server[ServerID].vcID,
-                        user: bot.servers[pconfig.Server[ServerID]].Channel[pconfig.Server[ServerID].vcID].members,
-                        last_update: Date.now()
-                    };
-                    // insert the stats
-                    db.client.insert(vcUsers, function (err, vcUsers) {
-                        util.vlog('DB-Insert von vc-users wurde durchgeführt')
-                        //
+    bot.on('dbready', function () {
+        //for (var ServerID in pconfig.Server) {
+        let ServerID = "203443031704076291";
+        let vcID = "203443031704076292";
+        db.client.findOne({ type: 'vc-users', serverID: ServerID }, function (err, vcUsers) {
+            if (vcUsers) {
+                // DB-Entry exists: db.update list (voice channel --> DB)
+                let userlist = []
+                Object.keys(bot.servers[ServerID].channels[vcID].members).forEach(function (id) {
+                    userlist.push(id);
+                });
+
+                db.client.update({
+                    type: 'vc-users',
+                }, {
+                        $set: {
+                            user: userlist,
+                            last_update: Date.now()
+                        }
                     });
-                }
-            });
-        }
+            } else {
+                // create the vs-users entry and save it
+                vcUsers = {
+                    type: 'vc-users',
+                    serverID: ServerID,
+                    chanID: pconfig.Server[ServerID].vcID,
+                    user: userlist,
+                    last_update: Date.now()
+                };
+                // insert the stats
+                db.client.insert(vcUsers, function (err, vcUsers) {
+                    util.vlog('DB-Insert von vc-users wurde durchgeführt')
+                    //
+                });
+            }
+        });
+        // }
     });
 
 

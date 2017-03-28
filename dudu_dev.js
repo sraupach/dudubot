@@ -153,12 +153,10 @@
         
 
 
-    client.on('disconnect', function () {
+    client.on('disconnect', function (errMsg, code) {
         client.connected = false;
     /* jshint -W030 */ repl.exit;
-        util.log(chalk.red(
-            'Bot disconnected. Will attempt to reconnect in 5 seconds...\n'
-        ));
+        util.log(chalk.red('Bot disconnected. Will attempt to reconnect in 5 seconds...\n')+errMsg +" C: " + code);
 
         setTimeout(function () {
             client.connect();

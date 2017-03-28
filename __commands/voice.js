@@ -15,7 +15,11 @@ module.exports = function command(bot, container) {
         action: function (meta) {
             //console.log("run command !vc")
             var vcdata = voiceAnnounce.getVClist();
-
+            //call vcmatchdb - matching Voice-Channel with DB
+            voiceAnnounce.vcmatchdb(meta.server);
+            //
+            var stats = voiceAnnounce.vcstats(meta.server);
+            //
             let embedObj = {
                 type: 'rich',
                 title: 'Voice Information',
@@ -34,7 +38,7 @@ module.exports = function command(bot, container) {
             // Add Voice user-count
             embedObj.fields.push({
                 name: `Active User in Voice-Channel: `,
-                value: vusercount,
+                value: vusercount + ' | ' + stats.count,
                 inline: false
             });
             // Add User list

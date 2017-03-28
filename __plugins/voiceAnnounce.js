@@ -70,19 +70,24 @@ module.exports = function plugin(bot, container, pconfig) {
         };
     });
 
-    // Check if DB-Entity exists and update entry with currently active User in #Voice-Channel
-    bot.on('dbready', function () {
-        //for (var ServerID in pconfig.Server) {
-        let ServerID = "203443031704076291";
-        let vcID = "203443031704076292";
-        db.client.findOne({ type: 'vc-users', serverID: ServerID }, function (err, vcUsers) {
-            if (vcUsers) {
-                // DB-Entry exists: db.update list (voice channel --> DB)
-                let userlist = []
-                Object.keys(bot.servers[ServerID].channels[vcID].members).forEach(function (id) {
-                    userlist.push(id);
-                });
 
+
+    // methods-----------------------------------
+    // Check if DB-Entity exists and update entry with currently active User in #Voice-Channel
+
+    plugin.vcmatchdb = function (server) {
+        let ServerID = server;
+        let vcID = pconfig.Server[ServerID].vcID;
+        let userlist = []
+        Object.keys(bot.servers[ServerID].channels[vcID].members).forEach(function (id) {
+            userlist.push(id);
+        });
+
+        db.client.findOne({ type: 'vc-users', serverID: ServerID }, function (err, vcUsers) {
+
+            if (vcUsers) {
+                util.vlog('vc-users found in DB...only need to update!');
+                // DB-Entry exists: db.update list (voice channel --> DB)
                 db.client.update({
                     type: 'vc-users',
                 }, {
@@ -93,10 +98,11 @@ module.exports = function plugin(bot, container, pconfig) {
                     });
             } else {
                 // create the vs-users entry and save it
+                util.vlog('NO vc-users found in DB...creating it!');
                 vcUsers = {
                     type: 'vc-users',
                     serverID: ServerID,
-                    chanID: pconfig.Server[ServerID].vcID,
+                    chanID: vcID,
                     user: userlist,
                     last_update: Date.now()
                 };
@@ -107,12 +113,22 @@ module.exports = function plugin(bot, container, pconfig) {
                 });
             }
         });
-        // }
-    });
+    }
 
 
-    // methods-----------------------------------
-
+    plugin.vcstats = function (server) {
+        const vcstat = {
+            count: 0,
+            user: ""
+        };
+        vcstat.count = db.client.count({ type: "vc-users" }, function (err, count) {
+            util.vlog(count, server);
+            vcstat.count = count;
+            //return count;
+        });
+        console.log(vcstat.count)
+        return vcstat;
+    }
     /**
      * returns the current UserCount & all Users in Voice Channel
      */
@@ -132,41 +148,6 @@ module.exports = function plugin(bot, container, pconfig) {
         }
         return [voicecount, voicelist];
     };
-    /*
-       
-        bot.on('message', function(user, userID, channelID, message, event) {
-            const dm = channelID in bot.directMessages ? true : false;
-            const server = !dm ? bot.channels[channelID].guild_id : null;
-            if (server === pconfig.home.server && userID !== bot.id) {
-                /* jshint -W100 */ /*
-if (message.indexOf('(╯°□°）╯︵ ┻━┻') > -1) {
-bot.sendMessage({
-to: channelID,
-message: '┬─┬﻿ ノ( ゜-゜ノ)'
-});
-} else if (message.indexOf('┬─┬﻿ ノ( ゜-゜ノ)') > -1) {
-bot.sendMessage({
-to: channelID,
-message: `(╯°□°）╯︵ ┻━┻`
-});
-}
-}
-});
-
-var voicelist = []
-var vcName = client.servers[ServerID].channels[VCID].name
-var voicecount = list.getSize()
-if (voicecount > 0) {
-for(var i = 0; i < voicecount ; i++) {
-vUID = list.findAt(i);
-user = getNick(vUID);
-voicelist.push(user+"("+vUID+")");
-}
-} else {
-voicelist = "user found in "+vcName
-}
-send(channelID, voicecount+" "+voicelist);
-*/
 
     //return true;
     return plugin;

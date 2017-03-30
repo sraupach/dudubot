@@ -118,15 +118,13 @@ module.exports = function plugin(bot, container, pconfig) {
 
     plugin.vcstats = function (server) {
         const vcstat = {
-            count: 0,
+            count: 5,
             user: ""
         };
-        vcstat.count = db.client.count({ type: "vc-users" }, function (err, count) {
-            util.vlog(count, server);
+        db.client.count({ type: "vc-users" }, function (err, count) {
             vcstat.count = count;
-            //return count;
         });
-        console.log(vcstat.count)
+        util.vlog(" --> " + vcstat.count)
         return vcstat;
     }
     /**

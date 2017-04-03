@@ -97,13 +97,13 @@
             && event.d.webhook_id
             ? true
             : false;
-        
-        if(!meta.isWebhook) {
-        // was the message sent by a bot?
-        meta.isBot = client.servers[meta.server]
-            && client.users[userID].bot
-            ? true
-            : false;
+
+        if (!meta.isWebhook) {
+            // was the message sent by a bot?
+            meta.isBot = client.servers[meta.server]
+                && client.users[userID].bot
+                ? true
+                : false;
         } else {
             util.log('WebHook post: ' + event.d.webhook_id)
         }
@@ -149,14 +149,11 @@
             let cmd = util.stripCommandPrefixes(message);
             util.log('privmsg received' + cmd);
         }
-            });
-        
-
-
+    });
     client.on('disconnect', function (errMsg, code) {
         client.connected = false;
     /* jshint -W030 */ repl.exit;
-        util.log(chalk.red('Bot disconnected. Will attempt to reconnect in 5 seconds...\n')+errMsg +" C: " + code);
+        util.log(chalk.red('Bot disconnected. Will attempt to reconnect in 5 seconds...\n') + errMsg + " C: " + code);
 
         setTimeout(function () {
             client.connect();

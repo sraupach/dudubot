@@ -37,6 +37,8 @@ module.exports = function plugin(bot, container, pconfig) {
                     util.vlog('[DB] created insert for \'vc-users\'')
                 });
             }
+
+
         });
     });
 
@@ -54,7 +56,10 @@ module.exports = function plugin(bot, container, pconfig) {
 
                 if (serverID in pconfig.Server) {
                     if (event.d.channel_id == pconfig.Server[serverID].vcID) {
+                        // update DB-entry on event
+                        plugin.vcmatchdb(serverID);
 
+                        //
                         if (list.contains(userid)) {
                             util.vlog(usernick + " in der Liste gefunden - (activ in Raid voice Channel)", serverName)
                         } else {

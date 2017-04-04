@@ -26,16 +26,15 @@ module.exports = function plugin(bot, container, pconfig) {
     bot.on('dbready', function () {
         db.client.findOne({ type: 'vc-users' }, function (err, result) {
             if (result) {
-                util.vlog('VC-USERS: Exists')
+                // DB exists
             } else {
                 // we need to create the global stats
                 vcUsers = {
                     type: 'vc-users'
                 };
-
-                // insert the stats
+                // insert/create the stats
                 db.client.insert(vcUsers, function (err, vcUsers) {
-                    util.vlog('DB-Insert von vc-users wurde durchgeführt')
+                    util.vlog('[DB] created insert for \'vc-users\'')
                 });
             }
         });
@@ -90,9 +89,6 @@ module.exports = function plugin(bot, container, pconfig) {
 
         };
     });
-
-
-
     // methods-----------------------------------
     // Check if DB-Entity exists and update entry with currently active User in #Voice-Channel
 
@@ -101,46 +97,23 @@ module.exports = function plugin(bot, container, pconfig) {
         let vcID = pconfig.Server[ServerID].vcID;
         let userlist = []
         Object.keys(bot.servers[ServerID].channels[vcID].members).forEach(function (id) {
-            userlist.push(id);
+            userlist.push(bot.users[id].username)
         });
-        // DB-Entry exists: db.update list (voice channel --> DB)
-        db.client.update({ type: 'vc-users' }, {$set: { user: userlist }}, {}, function() {
+        let count = userlist.length
+        // DB-Entry exists: db.update list (voice channel --> DB) ....
+        db.client.update({ type: 'vc-users' }, {$set: { user: userlist, count: count, server: bot.servers[ServerID].name, voiceChannel: bot.servers[ServerID].channels[vcID].name }}, {}, function() {
 
         });
     }
 
     // new module for counting the users in channel
     plugin.vcstats = function (server, callback) {
-        const vcstat = {
-            count: 1337,
-            user: ""
-        };
-        db.client.count({ type: "vc-users" }, function (err, count) {
-            vcstat.count = count;
-            callback(vcstat);
+        db.client.findOne({ type: 'vc-users' }, function (err, result) {
+            if (result) {
+               callback(result)
+            } 
         });
-        //util.vlog(" --> " + vcstat.count)
-        //return vcstat;
     }
-    /**
-     * returns the current UserCount & all Users in Voice Channel
-     */
-    plugin.getVClist = function () {
-        //hier muss die listenausgabe rein
-        var voicelist = []
-        var voicecount = list.getSize()
-        if (voicecount > 0) {
-            for (var i = 0; i < voicecount; i++) {
-                vUID = list.findAt(i);
-                user = bot.users[vUID].username;
-                voicelist.push(user);
-            }
-        } else {
-            voicelist = "No user found";
-
-        }
-        return [voicecount, voicelist];
-    };
 
     //return true;
     return plugin;

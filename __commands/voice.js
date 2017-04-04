@@ -14,17 +14,14 @@ module.exports = function command(bot, container) {
         permissions: 'private',
         action: function (meta) {
             //console.log("run command !vc")
-            var vcdata = voiceAnnounce.getVClist();
             //call vcmatchdb - matching Voice-Channel with DB
             voiceAnnounce.vcmatchdb(meta.server);
             //
-            var stats = voiceAnnounce.vcstats(meta.server, function (vcstat) {
-                console.log(vcstat)
-                //});
-                //
+            voiceAnnounce.vcstats(meta.server, function (vcstat) {
+
                 let embedObj = {
                     type: 'rich',
-                    title: 'Voice Information',
+                    title: 'Voice Information: ' + vcstat.server,
                     description: '',
                     color: container.util.toColorInt('01DFD7'),
                     fields: [],
@@ -35,18 +32,16 @@ module.exports = function command(bot, container) {
                         width: '25px'   // optional
                     }
                 };
-                vusercount = vcdata[0].toString()
-                vusers = vcdata[1].toString()
                 // Add Voice user-count
                 embedObj.fields.push({
-                    name: `Active User in Voice-Channel: `,
-                    value: vusercount + '|' + vcstat.count,
+                    name: `Active User in ` + vcstat.voiceChannel + `: `,
+                    value: vcstat.count,
                     inline: false
                 });
                 // Add User list
                 embedObj.fields.push({
                     name: `Users: `,
-                    value: `` + vcdata[1].toString() + ``,
+                    value: '' + vcstat.user + '',
                     inline: false
                 });
 

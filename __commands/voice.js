@@ -21,8 +21,8 @@ module.exports = function command(bot, container) {
 
                 let embedObj = {
                     type: 'rich',
-                    title: 'Voice Information: ' + vcstat.server,
-                    description: '',
+                    title: vcstat.server,
+                    description: '<' + vcstat.voiceChannel + '>',
                     color: container.util.toColorInt('01DFD7'),
                     fields: [],
                     thumbnail: {
@@ -34,7 +34,7 @@ module.exports = function command(bot, container) {
                 };
                 // Add Voice user-count
                 embedObj.fields.push({
-                    name: `Active User in ` + vcstat.voiceChannel + `: `,
+                    name: `Active`,
                     value: vcstat.count,
                     inline: false
                 });

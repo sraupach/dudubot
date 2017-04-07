@@ -21,10 +21,8 @@ module.exports = function plugin(bot, container, pconfig) {
         api.getZones(function (err, data) {
             //console.log(data["id"].name);
             let lines = '';
-            var keys = Object.keys(data[0]);
-            console.log(keys);
             Object.keys(data).forEach(function (id) {
-                if (data[id].id === logcode) {
+                if (data[id].id === name) {
                     lines += id + ' Zone-ID: ' + data[id].id + ' -> ' + data[id].name + '\n';
                 }
             });

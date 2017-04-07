@@ -107,7 +107,7 @@ module.exports = function plugin(bot, container, pconfig) {
         let count = userlist.length
         // DB-Entry exists: db.update list (voice channel --> DB) ....
         db.client.update({ type: 'vc-users' }, {$set: { user: userlist, count: count, server: bot.servers[ServerID].name, voiceChannel: bot.servers[ServerID].channels[vcID].name }}, {}, function() {
-
+        util.vlog('vcmatchdb: done.')
         });
     }
 

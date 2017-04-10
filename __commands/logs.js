@@ -38,25 +38,30 @@ module.exports = function command(bot, container) {
                     }
                 };
                 // Add logInfo
+                // FOR schleife über die länge des Array (result.length)
+                for (var i = 0; i < result.length; i++) {
                 embedObj.fields.push({
-                    name: result[0].title + ' (' + util.epochtime(result[0].start)+')',
+                    name: result[i].title + ' (' + util.epochtime(result[i].start)+')',
                     //name: result[0].title + ' ' + result[0].start,
-                    value: '[link to log](https://www.warcraftlogs.com/reports/' + result[0].id + ')',
+                    value: '[link to log](https://www.warcraftlogs.com/reports/' + result[i].id + ')',
                     inline: false
                 });
-                // Add LogLocation
+                }
+                // ENDE FOR schleife
+                /* 
+                //Add LogLocation
                 embedObj.fields.push({
                     name: result[1].title + ' (' + util.epochtime(result[1].start)+')',
                     value: '[link to log](https://www.warcraftlogs.com/reports/' + result[1].id + ')',
                     inline: false
                 });
-                                // Add LogLocation
+                // Add LogLocation
                 embedObj.fields.push({
-                    name: result[2].title + ' (' + util.epochtime(result[2].start)')',
+                    name: result[2].title + ' (' + util.epochtime(result[2].start)+')',
                     value: '[link to log](https://www.warcraftlogs.com/reports/' + result[2].id + ')',
                     inline: false
                 });
-
+                */
                 bot.sendMessage({
                     to: meta.channelID,
                     message: 'This Module is under construction\n',

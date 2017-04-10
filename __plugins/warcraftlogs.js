@@ -25,7 +25,7 @@ module.exports = function plugin(bot, container, pconfig) {
             Object.keys(data).forEach(function (id) {
                 if (data[id].id === inputid) {
                     lines = id + ' Zone-ID: ' + data[id].id + ' -> ' + data[id].name + '\n';
-                    console.log(data[id].name);
+                    //console.log(data[id].name);
                     return data[id].name
                     
                 }
@@ -52,6 +52,7 @@ module.exports = function plugin(bot, container, pconfig) {
                 return;
             }
             //Success, log the whole data object to the console. 
+            console.log(data.length);
             console.log(data);
             callback(data);
         });

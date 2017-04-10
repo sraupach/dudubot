@@ -16,7 +16,7 @@ module.exports = function command(bot, container) {
             warcraftlogs.getLastLog(meta.input, function (result) {
                 // ZONE should be >> warcraftlogs.getInstance(result[0].zone) <<
                 //let line = result[0].title + ' Uploaded by: ' + result[0].owner + ' in ' + result[0].zone
-                /*
+                /*ssss
                 var Instance = '-'
                 warcraftlogs.getInstance(result[0].zone, function(result) {
                     var Instance = result;
@@ -28,7 +28,7 @@ module.exports = function command(bot, container) {
                     type: 'rich',
                     title: 'Warcraftlogs',
                     description: 'Latest <in Harmony> log',
-                    color: container.util.toColorInt('01DFD7'),
+                    color: container.util.toColorInt('0B610B'),
                     fields: [],
                     thumbnail: {
                         url: 'https://www.warcraftlogs.com/img/common/warcraft-logo.png',
